@@ -1,0 +1,37 @@
+{
+  "name": "cocokini-node-capstone",
+  "version": "1.0.0",
+  "description": "Thinkful's Node FullStack Capstone",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonathanbeaty/cocokini-fullstack.git"
+  },
+  "keywords": [
+    "cocokini",
+    "node.js",
+    "express",
+    "mongoose",
+    "chai",
+    "mocha",
+    "unit",
+    "testing"
+  ],
+  "author": "Jonathan Beaty",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jonathanbeaty/cocokini-fullstack/issues"
+  },
+  "homepage": "https://github.com/jonathanbeaty/cocokini-fullstack#readme",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.0",
+    "express": "^4.16.4",
+    "mocha": "^5.2.0",
+    "mongoose": "^5.3.9",
+    "morgan": "^1.9.1"
+  }
+}
