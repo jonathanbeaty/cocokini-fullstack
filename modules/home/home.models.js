@@ -104,3 +104,9 @@ upcomingEventsSchema.methods.serialize = function () {
 };
 
 const upcomingEvents = mongoose.model('upcomingEvents', upcomingEventsSchema);
+
+module.exports = {
+    frontPageSlider,
+    localFavoritesImg,
+    upcomingEvents
+};
