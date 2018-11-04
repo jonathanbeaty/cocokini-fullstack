@@ -22,6 +22,17 @@ const frontPageSliderSchema = mongoose.Schema({
     }
 });
 
+frontPageSliderSchema.methods.serialize = function () {
+    return {
+        id: this._id,
+        img: this.img,
+        description: this.description,
+        created: this.created
+    };
+};
+
+const frontPageSlider = mongoose.model('frontPageSlider', frontPageSliderSchema);
+
 //Home page local favorites section images
 const localFavoritesImgSchema = mongoose.Schema({
     img: {
@@ -42,6 +53,18 @@ const localFavoritesImgSchema = mongoose.Schema({
     }
 
 });
+
+localFavoritesImgSchema.methods.serialize = function () {
+    return {
+        id: this._id,
+        img: this.img,
+        bikiniName: this.bikiniName,
+        description: this.description,
+        created: this.created
+    };
+};
+
+const localFavoritesImg = mongoose.model('localFavoritesImg', localFavoritesImgSchema);
 
 //Home page upcoming events images and event information
 const upcomingEventsSchema = mongoose.Schema({
@@ -69,23 +92,6 @@ const upcomingEventsSchema = mongoose.Schema({
 
 });
 
-frontPageSliderSchema.methods.serialize = function () {
-    return {
-        id: this._id,
-        img: this.img,
-        description: this.description,
-        created: this.created
-    };
-};
-localFavoritesImgSchema.methods.serialize = function () {
-    return {
-        id: this._id,
-        img: this.img,
-        bikiniName: this.bikiniName,
-        description: this.description,
-        created: this.created
-    };
-};
 upcomingEventsSchema.methods.serialize = function () {
     return {
         id: this._id,
@@ -96,3 +102,5 @@ upcomingEventsSchema.methods.serialize = function () {
         created: this.created
     };
 };
+
+const upcomingEvents = mongoose.model('upcomingEvents', upcomingEventsSchema);
