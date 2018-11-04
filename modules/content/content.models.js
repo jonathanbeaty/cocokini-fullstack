@@ -12,7 +12,7 @@ const frontPageSliderSchema = mongoose.Schema({
         contentType: String,
         required: true
     },
-    description: {
+    page: {
         type: String,
         required: true
     },
@@ -26,7 +26,7 @@ frontPageSliderSchema.methods.serialize = function () {
     return {
         id: this._id,
         img: this.img,
-        description: this.description,
+        page: this.page,
         created: this.created
     };
 };
@@ -44,8 +44,9 @@ const localFavoritesImgSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    description: {
-        type: String
+    page: {
+        type: String,
+        required: true
     },
     created: {
         type: Date,
@@ -59,7 +60,7 @@ localFavoritesImgSchema.methods.serialize = function () {
         id: this._id,
         img: this.img,
         bikiniName: this.bikiniName,
-        description: this.description,
+        page: this.page,
         created: this.created
     };
 };
@@ -85,6 +86,10 @@ const upcomingEventsSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    page: {
+        type: String,
+        required: true
+    },
     created: {
         type: Date,
         default: Date.now
@@ -99,14 +104,94 @@ upcomingEventsSchema.methods.serialize = function () {
         eventName: this.eventName,
         eventDate: this.eventDate,
         eventLocation: this.eventLocation,
+        page: this.page,
         created: this.created
     };
 };
 
 const upcomingEvents = mongoose.model('upcomingEvents', upcomingEventsSchema);
 
+//PRODUCTS_OVERVIEW_PAGE
+
+const productsOverviewSchema = mongoose.Schema({
+    img: {
+        data: Buffer,
+        contentType: String,
+        required: true
+    },
+    bikiniName: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    page: {
+        type: String,
+        required: true
+    },
+    created: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+productsOverviewSchema.methods.serialize = function () {
+    return {
+        id: this._id,
+        img: this.img,
+        bikiniName: this.bikiniName,
+        price: this.price,
+        page: this.page,
+        created: this.created
+    };
+};
+
+const productsOverview = mongoose.model('productsOverview', productsOverviewSchema);
+
+//PRODUCT_PAGE
+
+const productPageSchema = mongoose.Schema({
+    bikiniName: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    sizes: {
+        type: String,
+        required: true
+    },
+    sliderImages: {
+        data: Buffer,
+        contentType: String,
+        required: true
+    },
+    fabricImages: {
+        data: Buffer,
+        contentType: String,
+        required: true
+    },
+    page: {
+        type: String,
+        required: true
+    },
+    created: {
+        type: Date,
+        default: Date.now
+    }
+
+});
+
+const productPage = mongoose.model('productPage', productPageSchema);
+
 module.exports = {
     frontPageSlider,
     localFavoritesImg,
-    upcomingEvents
+    upcomingEvents,
+    productsOverview,
+    productPage
 };
