@@ -5,6 +5,7 @@ mongoose.Promise = global.Promise;
 
 // HOME_PAGE 
 
+//Home page auto changing slideshow images
 const frontPageSliderSchema = mongoose.Schema({
     img: {
         data: Buffer,
@@ -21,6 +22,7 @@ const frontPageSliderSchema = mongoose.Schema({
     }
 });
 
+//Home page local favorites section images
 const localFavoritesImgSchema = mongoose.Schema({
     img: {
         data: Buffer,
@@ -41,6 +43,7 @@ const localFavoritesImgSchema = mongoose.Schema({
 
 });
 
+//Home page upcoming events images and event information
 const upcomingEventsSchema = mongoose.Schema({
     img: {
         data: Buffer,
@@ -66,13 +69,30 @@ const upcomingEventsSchema = mongoose.Schema({
 
 });
 
-
-
 frontPageSliderSchema.methods.serialize = function () {
     return {
         id: this._id,
         img: this.img,
         description: this.description,
+        created: this.created
+    };
+};
+localFavoritesImgSchema.methods.serialize = function () {
+    return {
+        id: this._id,
+        img: this.img,
+        bikiniName: this.bikiniName,
+        description: this.description,
+        created: this.created
+    };
+};
+upcomingEventsSchema.methods.serialize = function () {
+    return {
+        id: this._id,
+        img: this.img,
+        eventName: this.eventName,
+        eventDate: this.eventDate,
+        eventLocation: this.eventLocation,
         created: this.created
     };
 };
