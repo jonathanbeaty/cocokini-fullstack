@@ -26,7 +26,6 @@ const frontPageSliderSchema = mongoose.Schema({
 frontPageSliderSchema.methods.serialize = function () {
     return {
         id: this._id,
-        img: this.img,
         page: this.page,
         created: this.created
     };
@@ -59,7 +58,6 @@ const localFavoritesImgSchema = mongoose.Schema({
 localFavoritesImgSchema.methods.serialize = function () {
     return {
         id: this._id,
-        img: this.img,
         bikiniName: this.bikiniName,
         page: this.page,
         created: this.created
@@ -101,7 +99,6 @@ const upcomingEventsSchema = mongoose.Schema({
 upcomingEventsSchema.methods.serialize = function () {
     return {
         id: this._id,
-        img: this.img,
         eventName: this.eventName,
         eventDate: this.eventDate,
         eventLocation: this.eventLocation,
@@ -141,7 +138,6 @@ const productsOverviewSchema = mongoose.Schema({
 productsOverviewSchema.methods.serialize = function () {
     return {
         id: this._id,
-        img: this.img,
         bikiniName: this.bikiniName,
         price: this.price,
         page: this.page,
