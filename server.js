@@ -11,16 +11,12 @@ const {
 } = require('./config');
 
 const {
-    frontPageSlider,
-    localFavoritesImg,
-    upcomingEvents,
-    productsOverview,
-    productPage
-} = require('./modules/content/content.models');
+    Products
+} = require('./modules/content/products.models');
 
 const {
-    admin
-} = require('./modules/admin/admin.models');
+    Events
+} = require('./modules/admin/events.models');
 
 const {
     Users
