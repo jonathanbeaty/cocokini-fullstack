@@ -8,9 +8,24 @@ mongoose.Promise = global.Promise;
 
 //Home page auto changing slideshow images
 const frontPageSliderSchema = mongoose.Schema({
-    img: {
-        data: Buffer,
-        contentType: String,
+    pictures: [{
+        url: {
+            type: String,
+            required: true
+        },
+        order: {
+            type: Number
+        },
+        altText: {
+            type: String
+        },
+        name: {
+            type: String,
+            required: 'Must require a name'
+        }
+    }],
+    primaryPicture: {
+        type: String,
         required: true
     },
     page: {
