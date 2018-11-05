@@ -70,7 +70,7 @@ app.post('/users', (req, res) => {
         .catch(err => {
             console.error(err);
             res.status(500).json({
-                error: 'Something went wrong'
+                error: 'Something went bad.......very bad'
             });
         });
 });

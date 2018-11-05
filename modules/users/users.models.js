@@ -41,20 +41,30 @@ const userSchema = mongoose.Schema({
                 type: String
             }
         },
-        topSize: {
-            type: String
-        },
-        bottomSize: {
-            type: String
-        }
+    },
+    topSize: {
+        type: String
+    },
+    bottomSize: {
+        type: String
     }
+});
+
+userSchema.virtual('name').get(function () {
+    return `${this.profile.firstName} ${this.profile.lastName}`.trim();
+});
+userSchema.virtual('location').get(function () {
+    return `${this.profile.location.address} ${this.profile.location.city} ${this.profile.location.state} ${this.profile.location.zipCode} ${this.profile.location.country}`.trim();
 });
 
 userSchema.methods.serialize = function () {
     return {
+        id: this._id,
         email: this.email,
-        firstName: this.firstName,
-        lastName: this.lastName
+        name: this.name,
+        location: this.location,
+        topSize: this.topSize,
+        bottomSize: this.bottomSize
     };
 };
 
