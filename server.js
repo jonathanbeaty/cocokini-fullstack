@@ -12,14 +12,14 @@ const {
 
 const {
     Products
-} = require('./modules/content/products.models');
+} = require('./modules/products/products.models');
 
 const {
     Events
-} = require('./modules/admin/events.models');
+} = require('./modules/events/events.models');
 
 const {
-    Users
+    User
 } = require('./modules/users/users.models');
 
 const app = express();
@@ -28,7 +28,7 @@ app.use(morgan('common'));
 app.use(express.json());
 
 app.get('/users', (req, res) => {
-    Users
+    User
         .find()
         .then(Users => {
             res.json(Users.map(user => user.serialize()));
@@ -52,23 +52,19 @@ app.post('/users', (req, res) => {
         }
     }
 
-    Users
+    User
         .create({
             email: req.body.email,
             password: req.body.password,
-            profile: {
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                location: {
-                    address: req.body.address,
-                    city: req.body.city,
-                    state: req.body.state,
-                    zipCode: req.body.zipCode,
-                    country: req.body.country
-                },
-                topSize: req.body.topSize,
-                bottomSize: req.body.bottomSize
-            }
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            address: req.body.address,
+            city: req.body.city,
+            state: req.body.state,
+            zipCode: req.body.zipCode,
+            country: req.body.country,
+            topSize: req.body.topSize,
+            bottomSize: req.body.bottomSize
         })
         .then(user => res.status(201).json(user.serialize()))
         .catch(err => {
@@ -81,7 +77,7 @@ app.post('/users', (req, res) => {
 
 app.use('*', function (req, res) {
     res.status(404).json({
-        message: 'Not Found'
+        message: 'Nothing here broski, move along'
     });
 });
 
@@ -119,8 +115,26 @@ function closeServer() {
     });
 }
 
+if (require.main === module) {
+    runServer(DATABASE_URL).catch(err => console.error(err));
+}
+
 module.exports = {
     runServer,
     app,
     closeServer
 };
+
+// {
+//     "email": "jonathanbeaty15@gmail.com",
+//     "password": "copper00",
+//     "firstName": "Jonathan",
+//     "lastName": "Beaty",
+//     "address": "102 Melba Dr.",
+//     "city": "Portland",
+//     "state": "Texas",
+//     "zipCode": "78374",
+//     "country": "United States",
+//     "topSize": "Large",
+//     "bottomSize": "Small"
+// }

@@ -4,7 +4,8 @@
   "description": "Thinkful's Node FullStack Capstone",
   "main": "server.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
     "chai-http": "^4.2.0",
     "express": "^4.16.4",
     "faker": "^4.1.0",
+    "install": "^0.12.2",
     "mocha": "^5.2.0",
     "mongoose": "^5.3.9",
     "morgan": "^1.9.1",
