@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-const userSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
     email: {
         type: String,
         lowercase: true,
@@ -15,7 +15,7 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    profile: {
+    profile: [{
         firstName: {
             type: String,
             required: true
@@ -24,7 +24,7 @@ const userSchema = mongoose.Schema({
             type: String,
             required: true
         },
-        location: {
+        location: [{
             address: {
                 type: String
             },
@@ -40,8 +40,8 @@ const userSchema = mongoose.Schema({
             country: {
                 type: String
             }
-        },
-    },
+        }]
+    }],
     topSize: {
         type: String
     },
@@ -50,34 +50,36 @@ const userSchema = mongoose.Schema({
     }
 });
 
-userSchema.virtual('name').get(function () {
+UserSchema.virtual('name').get(function () {
     return `${this.profile.firstName} ${this.profile.lastName}`.trim();
 });
-userSchema.virtual('location').get(function () {
-    return `${this.profile.location.address} ${this.profile.location.city} ${this.profile.location.state} ${this.profile.location.zipCode} ${this.profile.location.country}`.trim();
+
+UserSchema.virtual('locationString').get(function () {
+    return `${this.profile.address} ${this.profile.city} ${this.profile.state} ${this.profile.zipCode} ${this.profile.country}`.trim();
 });
 
-userSchema.methods.serialize = function () {
+UserSchema.methods.serialize = function () {
+
     return {
         id: this._id,
         email: this.email,
         name: this.name,
-        location: this.location,
+        location: this.locationString,
         topSize: this.topSize,
         bottomSize: this.bottomSize
     };
 };
 
-userSchema.methods.validatePassword = function (password) {
+UserSchema.methods.validatePassword = function (password) {
     return bcrypt.compare(password, this.password);
 };
 
-userSchema.statics.hashPassword = function (password) {
+UserSchema.statics.hashPassword = function (password) {
     return bcrypt.hash(password, 10);
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', UserSchema);
 
 module.exports = {
     User
-}
+};
