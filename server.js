@@ -3,6 +3,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 mongoose.Promise = global.Promise;
 
 const {
@@ -22,6 +23,7 @@ const {
     User
 } = require('./modules/users/users.models');
 
+const jsonParser = bodyParser.json();
 const app = express();
 
 app.use(morgan('common'));
@@ -79,7 +81,7 @@ app.post('/users', (req, res) => {
         });
 });
 
-app.put('/users/:id', (req, res) => {
+app.put('/users/:id', jsonParser, (req, res) => {
     if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
         const message = (
             `Request path id (${req.params.id}) and request body id ` +
@@ -101,9 +103,15 @@ app.put('/users/:id', (req, res) => {
 
     User
         .findByIdAndUpdate(req.params.id, {
-            $set: toUpdate
-        })
-        .then(user => res.status(204).end())
+                $set: toUpdate
+            },
+            User.findOne({
+                _id: req.params.id
+            }).then(function (User) {
+                res.send(User)
+            })
+        )
+        .then(updatedUser => res.status(204).end())
         .catch(err => res.status(500).json({
             message: 'Internal server error'
         }));
@@ -128,7 +136,9 @@ let server;
 
 function runServer(databaseUrl, port = PORT) {
     return new Promise((resolve, reject) => {
-        mongoose.connect(databaseUrl, err => {
+        mongoose.connect(databaseUrl, {
+            useNewUrlParser: true
+        }, err => {
             if (err) {
                 return reject(err);
             }
