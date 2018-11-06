@@ -15,7 +15,7 @@ const UserSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    profile: [{
+    profile: {
         firstName: {
             type: String,
             required: true
@@ -24,7 +24,7 @@ const UserSchema = mongoose.Schema({
             type: String,
             required: true
         },
-        location: [{
+        location: {
             address: {
                 type: String
             },
@@ -40,8 +40,8 @@ const UserSchema = mongoose.Schema({
             country: {
                 type: String
             }
-        }]
-    }],
+        }
+    },
     topSize: {
         type: String
     },
@@ -50,12 +50,20 @@ const UserSchema = mongoose.Schema({
     }
 });
 
+UserSchema.set('toObject', {
+    virtuals: true,
+    getters: true
+})
+UserSchema.set('toJSON', {
+    virtuals: true
+})
+
 UserSchema.virtual('name').get(function () {
     return `${this.profile.firstName} ${this.profile.lastName}`.trim();
 });
 
 UserSchema.virtual('locationString').get(function () {
-    return `${this.profile.address} ${this.profile.city} ${this.profile.state} ${this.profile.zipCode} ${this.profile.country}`.trim();
+    return `${this.profile.location.address} ${this.profile.location.city} ${this.profile.location.state} ${this.profile.location.zipCode} ${this.profile.location.country}`.trim();
 });
 
 UserSchema.methods.serialize = function () {

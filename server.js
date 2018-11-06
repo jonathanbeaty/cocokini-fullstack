@@ -56,13 +56,17 @@ app.post('/users', (req, res) => {
         .create({
             email: req.body.email,
             password: req.body.password,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            address: req.body.address,
-            city: req.body.city,
-            state: req.body.state,
-            zipCode: req.body.zipCode,
-            country: req.body.country,
+            profile: {
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                location: {
+                    address: req.body.address,
+                    city: req.body.city,
+                    state: req.body.state,
+                    zipCode: req.body.zipCode,
+                    country: req.body.country
+                }
+            },
             topSize: req.body.topSize,
             bottomSize: req.body.bottomSize
         })
@@ -73,6 +77,13 @@ app.post('/users', (req, res) => {
                 error: 'Something went bad.......very bad'
             });
         });
+});
+
+app.put('/users/:id', (req, res) => {
+
+
+
+
 });
 
 app.use('*', function (req, res) {
