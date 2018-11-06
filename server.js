@@ -80,10 +80,42 @@ app.post('/users', (req, res) => {
 });
 
 app.put('/users/:id', (req, res) => {
+    if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+        const message = (
+            `Request path id (${req.params.id}) and request body id ` +
+            `(${req.body.id}) must match`);
+        console.error(message);
+        return res.status(400).json({
+            message: message
+        });
+    }
 
+    const toUpdate = {};
+    const updateableFields = ['email', 'password', 'firstName', 'lastName', 'address', 'city', 'state', 'zipCode', 'country', 'topSize', 'bottomSize'];
 
+    updateableFields.forEach(field => {
+        if (field in req.body) {
+            toUpdate[field] = req.body[field];
+        }
+    });
 
+    User
+        .findByIdAndUpdate(req.params.id, {
+            $set: toUpdate
+        })
+        .then(user => res.status(204).end())
+        .catch(err => res.status(500).json({
+            message: 'Internal server error'
+        }));
+});
 
+app.delete('/users/:id', (req, res) => {
+    User
+        .findByIdAndDelete(req.params.id)
+        .then(user => res.status(204).end())
+        .catch(err => res.status(500).json({
+            message: 'Internal server error'
+        }));
 });
 
 app.use('*', function (req, res) {
