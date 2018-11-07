@@ -8,7 +8,7 @@ const productsSchema = mongoose.Schema({
         type: String,
         required: 'Must declare Top, Bottoms, or Fullsuit style. Thank you, have good day.'
     },
-    bikiniName: {
+    name: {
         type: String,
         required: 'Must declare the name of the Bikini. Thank you, have good day.'
     },
@@ -19,9 +19,8 @@ const productsSchema = mongoose.Schema({
     fabrics: [{
         type: String,
         required: 'Must declare fabric offered '
-
     }],
-    bikiniPicture: [{
+    pictures: [{
         url: {
             type: String,
             required: true
@@ -34,9 +33,15 @@ const productsSchema = mongoose.Schema({
             required: 'What encapsulates this bikini image in words?'
         },
     }],
-    primaryPicture: {
-        type: String,
-        required: 'Must declare if this image will headline a section YES or NO'
+    picture: {
+        url: {
+            type: String,
+            required: 'Must declare if this image will headline a section YES or NO'
+        },
+        altText: {
+            type: String,
+            required: 'What encapsulates this bikini image in words?'
+        }
     },
     page: {
         type: String,
@@ -52,11 +57,11 @@ productsSchema.methods.serialize = function () {
     return {
         id: this._id,
         style: this.style,
-        bikiniName: this.bikiniName,
+        name: this.name,
         sizes: this.sizes,
         fabrics: this.fabrics,
-        bikiniPicture: this.bikiniPicture,
-        primaryPicture: this.primaryPicture,
+        picture: this.picture,
+        pictures: this.pictures,
         page: this.page,
         created: this.created
     };

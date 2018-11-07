@@ -43,11 +43,25 @@ app.get('/users', (req, res) => {
         });
 });
 
+app.get('/products', (req, res) => {
+    Products
+        .find()
+        .then(Products => {
+            res.json(Products.map(product => product.serialize()));
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({
+                error: 'something went horribly awry'
+            });
+        });
+});
+
 app.post('/users', (req, res) => {
-    const requiredFields = ['email', 'password', 'firstName', 'lastName'];
+    const requiredFields = ['email', 'profile', 'location', 'password', 'firstName', 'lastName'];
     for (let i = 0; i < requiredFields.length; i++) {
         const field = requiredFields[i];
-        if (!(field in req.body)) {
+        if (!(field in req.body) || !(field in req.body.profile) || !(field in req.body.profile.location)) {
             const message = `Missing \`${field}\` in request body`;
             console.error(message);
             return res.status(400).send(message);
@@ -59,18 +73,56 @@ app.post('/users', (req, res) => {
             email: req.body.email,
             password: req.body.password,
             profile: {
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
+                firstName: req.body.profile.firstName,
+                lastName: req.body.profile.lastName,
                 location: {
-                    address: req.body.address,
-                    city: req.body.city,
-                    state: req.body.state,
-                    zipCode: req.body.zipCode,
-                    country: req.body.country
+                    address: req.body.profile.location.address,
+                    city: req.body.profile.location.city,
+                    state: req.body.profile.location.state,
+                    zipCode: req.body.profile.location.zipCode,
+                    country: req.body.profile.location.country
                 }
             },
             topSize: req.body.topSize,
             bottomSize: req.body.bottomSize
+        })
+        .then(user => res.status(201).json(user.serialize()))
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({
+                error: 'Something went bad.......very bad'
+            });
+        });
+});
+
+app.post('/products', (req, res) => {
+    const requiredFields = ['style', 'name', 'sizes'];
+    for (let i = 0; i < requiredFields.length; i++) {
+        const field = requiredFields[i];
+        if (!(field in req.body)) {
+            const message = `Missing \`${field}\` in request body`;
+            console.error(message);
+            return res.status(400).send(message);
+        }
+    }
+
+    Products
+        .create({
+            style: req.body.style,
+            name: req.body.name,
+            sizes: req.body.sizes,
+            fabrics: req.body.fabrics,
+            pictures: [{
+                url: req.body.pictures.url,
+                order: req.body.pictures.order,
+                altText: req.body.pictures.altText
+            }],
+            picture: {
+                url: req.body.picture.url,
+                altText: req.body.picture.altText
+            },
+            page: req.body.page,
+            created: req.body.created
         })
         .then(user => res.status(201).json(user.serialize()))
         .catch(err => {
@@ -93,13 +145,15 @@ app.put('/users/:id', jsonParser, (req, res) => {
     }
 
     const toUpdate = {};
-    const updateableFields = ['email', 'password', 'firstName', 'lastName', 'address', 'city', 'state', 'zipCode', 'country', 'topSize', 'bottomSize'];
+    const updateableFields = ['email', 'profile', 'password', 'firstName', 'lastName', 'address', 'city', 'state', 'zipCode', 'country', 'topSize', 'bottomSize'];
 
     updateableFields.forEach(field => {
         if (field in req.body) {
             toUpdate[field] = req.body[field];
         }
     });
+
+    console.log(toUpdate);
 
     User
         .findByIdAndUpdate(req.params.id, {
@@ -181,13 +235,36 @@ module.exports = {
 // {
 //     "email": "jonathanbeaty15@gmail.com",
 //     "password": "copper00",
-//     "firstName": "Jonathan",
-//     "lastName": "Beaty",
-//     "address": "102 Melba Dr.",
-//     "city": "Portland",
-//     "state": "Texas",
-//     "zipCode": "78374",
-//     "country": "United States",
+//     "profile": {
+//     	"firstName": "JOEnathan",
+//     	"lastName": "BOBDillon",
+//     	"location": {
+//     		"address": "209 West Utica St.",
+//     		"city": "Portland",
+//     		"state": "Oregon",
+//     		"zipCode": "65400",
+//     		"country": "United States"
+//     	}
+//     },
 //     "topSize": "Large",
 //     "bottomSize": "Small"
+// }
+
+
+
+// {
+//     "style": "joeNathanintheHOUSE@gmail.com",
+//     "name": "copper00",
+//     "sizes": "large",
+//     "fabrics": "hawaii",
+//     "pictures": {
+//     	"url": "JOEnathan",
+//     	"order": 1,
+//     	"altText": "pic"
+//     },
+//     "picture": {
+//     	"url": "JOEnathan",
+//     	"altText": "pic"
+//     },
+//     "page": "Large"
 // }
