@@ -58,10 +58,10 @@ app.get('/products', (req, res) => {
 });
 
 app.post('/users', (req, res) => {
-    const requiredFields = ['email', 'profile', 'location', 'password', 'firstName', 'lastName'];
+    const requiredFields = ['email', 'password'];
     for (let i = 0; i < requiredFields.length; i++) {
         const field = requiredFields[i];
-        if (!(field in req.body) || !(field in req.body.profile) || !(field in req.body.profile.location)) {
+        if (!(field in req.body)) {
             const message = `Missing \`${field}\` in request body`;
             console.error(message);
             return res.status(400).send(message);
@@ -180,6 +180,15 @@ app.delete('/users/:id', (req, res) => {
         }));
 });
 
+app.delete('/products/:id', (req, res) => {
+    Products
+        .findByIdAndDelete(req.params.id)
+        .then(Products => res.status(204).end())
+        .catch(err => res.status(500).json({
+            message: 'Internal server error'
+        }));
+});
+
 app.use('*', function (req, res) {
     res.status(404).json({
         message: 'Nothing here broski, move along'
@@ -233,11 +242,11 @@ module.exports = {
 };
 
 // {
-//     "email": "jonathanbeaty15@gmail.com",
-//     "password": "copper00",
+//     "email": "laurenelizabethpage24@gmail.com",
+//     "password": "cocokinimytini",
 //     "profile": {
-//     	"firstName": "JOEnathan",
-//     	"lastName": "BOBDillon",
+//     	"firstName": "Lauren",
+//     	"lastName": "Page",
 //     	"location": {
 //     		"address": "209 West Utica St.",
 //     		"city": "Portland",
@@ -251,20 +260,19 @@ module.exports = {
 // }
 
 
-
 // {
-//     "style": "joeNathanintheHOUSE@gmail.com",
-//     "name": "copper00",
-//     "sizes": "large",
-//     "fabrics": "hawaii",
-//     "pictures": {
-//     	"url": "JOEnathan",
-//     	"order": 1,
-//     	"altText": "pic"
-//     },
+//     "style": "Top",
+//     "name": "Matapalo",
+//     "sizes": ["Large", "Medium", "Small"],
+//     "fabrics": ["Cheetah", "Leopard Skin", "Sunrise"],
 //     "picture": {
-//     	"url": "JOEnathan",
-//     	"altText": "pic"
+//     	"url": "https://c1.staticflickr.com/1/783/27741643448_c47e6a4d5f_b.jpg",
+//     	"altText": "Kauai"
 //     },
-//     "page": "Large"
+//     "pictures": {
+//     	"url": "https://c1.staticflickr.com/1/823/28133304198_ef1091b17d_b.jpg",
+//     	"order": 1,
+//     	"altText": "Beach Time"
+//     },
+//     "page": "Home"
 // }
