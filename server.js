@@ -43,6 +43,20 @@ app.get('/users', (req, res) => {
         });
 });
 
+app.get('/events', (req, res) => {
+    Events
+        .find()
+        .then(Events => {
+            res.json(Events.map(event => event.serialize()));
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({
+                error: 'something went horribly awry'
+            });
+        });
+});
+
 app.get('/products', (req, res) => {
     Products
         .find()
@@ -87,6 +101,36 @@ app.post('/users', (req, res) => {
             bottomSize: req.body.bottomSize
         })
         .then(user => res.status(201).json(user.serialize()))
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({
+                error: 'Something went bad.......very bad'
+            });
+        });
+});
+
+app.post('/events', (req, res) => {
+    const requiredFields = ['event', 'location', 'date'];
+    for (let i = 0; i < requiredFields.length; i++) {
+        const field = requiredFields[i];
+        if (!(field in req.body)) {
+            const message = `Missing \`${field}\` in request body`;
+            console.error(message);
+            return res.status(400).send(message);
+        }
+    }
+
+    Events
+        .create({
+            event: req.body.event,
+            location: req.body.location,
+            date: req.body.date,
+            picture: {
+                url: req.body.picture.url,
+                altText: req.body.picture.altText
+            }
+        })
+        .then(event => res.status(201).json(event.serialize()))
         .catch(err => {
             console.error(err);
             res.status(500).json({
@@ -171,10 +215,95 @@ app.put('/users/:id', jsonParser, (req, res) => {
         }));
 });
 
+app.put('/events/:id', jsonParser, (req, res) => {
+    if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+        const message = (
+            `Request path id (${req.params.id}) and request body id ` +
+            `(${req.body.id}) must match`);
+        console.error(message);
+        return res.status(400).json({
+            message: message
+        });
+    }
+
+    const toUpdate = {};
+    const updateableFields = ['event', 'location', 'date', 'picture', 'url', 'altText'];
+
+    updateableFields.forEach(field => {
+        if (field in req.body) {
+            toUpdate[field] = req.body[field];
+        }
+    });
+
+    console.log(toUpdate);
+
+    Events
+        .findByIdAndUpdate(req.params.id, {
+                $set: toUpdate
+            },
+            User.findOne({
+                _id: req.params.id
+            }).then(function (User) {
+                res.send(User)
+            })
+        )
+        .then(updatedEvent => res.status(204).end())
+        .catch(err => res.status(500).json({
+            message: 'Internal server error'
+        }));
+});
+
+app.put('/products/:id', jsonParser, (req, res) => {
+    if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+        const message = (
+            `Request path id (${req.params.id}) and request body id ` +
+            `(${req.body.id}) must match`);
+        console.error(message);
+        return res.status(400).json({
+            message: message
+        });
+    }
+
+    const toUpdate = {};
+    const updateableFields = ['style', 'name', 'sizes', 'fabrics', 'pictures', 'url', 'order', 'altText', 'picture', 'url', 'page', 'created'];
+
+    updateableFields.forEach(field => {
+        if (field in req.body) {
+            toUpdate[field] = req.body[field];
+        }
+    });
+
+    console.log(toUpdate);
+
+    Products
+        .findByIdAndUpdate(req.params.id, {
+                $set: toUpdate
+            },
+            User.findOne({
+                _id: req.params.id
+            }).then(function (User) {
+                res.send(User)
+            })
+        )
+        .then(updatedProduct => res.status(204).end())
+        .catch(err => res.status(500).json({
+            message: 'Internal server error'
+        }));
+});
+
 app.delete('/users/:id', (req, res) => {
     User
         .findByIdAndDelete(req.params.id)
         .then(user => res.status(204).end())
+        .catch(err => res.status(500).json({
+            message: 'Internal server error'
+        }));
+});
+
+app.delete('/events/:id', (req, res) => {
+    Events
+        .findByIdAndDelete(req.params.id)
+        .then(event => res.status(204).end())
         .catch(err => res.status(500).json({
             message: 'Internal server error'
         }));
@@ -275,4 +404,14 @@ module.exports = {
 //     	"altText": "Beach Time"
 //     },
 //     "page": "Home"
+// }
+
+// {
+//     "event": "Island Farmers Market - On the Island",
+//     "location": "Padre Island",
+//     "date": "March 23, 2019",
+//     "picture": {
+//         "url": "https://c1.staticflickr.com/1/961/26918910337_9c2fa22c2e_b.jpg",
+//         "altText": "Octoberfest"
+//     }
 // }
