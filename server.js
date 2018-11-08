@@ -26,6 +26,8 @@ const {
 const jsonParser = bodyParser.json();
 const app = express();
 
+app.use(express.static('public'));
+
 app.use(morgan('common'));
 app.use(express.json());
 
