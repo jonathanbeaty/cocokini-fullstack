@@ -158,15 +158,15 @@ app.post('/products', (req, res) => {
             name: req.body.name,
             sizes: req.body.sizes,
             fabrics: req.body.fabrics,
+            picture: {
+                url: req.body.picture.url,
+                altText: req.body.picture.altText
+            },
             pictures: [{
                 url: req.body.pictures.url,
                 order: req.body.pictures.order,
                 altText: req.body.pictures.altText
             }],
-            picture: {
-                url: req.body.picture.url,
-                altText: req.body.picture.altText
-            },
             page: req.body.page,
             created: req.body.created
         })

@@ -23,24 +23,20 @@ const productsSchema = mongoose.Schema({
     pictures: [{
         url: {
             type: String,
-            required: true
         },
         order: {
             type: Number
         },
         altText: {
             type: String,
-            required: 'What encapsulates this bikini image in words?'
         },
     }],
     picture: {
         url: {
             type: String,
-            required: 'Must declare if this image will headline a section YES or NO'
         },
         altText: {
             type: String,
-            required: 'What encapsulates this bikini image in words?'
         }
     },
     page: {

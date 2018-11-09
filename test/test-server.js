@@ -50,15 +50,15 @@ function createProductsData() {
         name: faker.random.word(),
         sizes: [faker.random.word(), faker.random.word(), faker.random.word()],
         fabrics: faker.random.word(),
+        picture: {
+            url: "https://c1.staticflickr.com/1/824/40127048850_995fefa127_b.jpg",
+            altText: faker.random.word()
+        },
         pictures: [{
-            url: faker.image.imageUrl(),
+            url: "https://c1.staticflickr.com/1/824/40127048850_995fefa127_b.jpg",
             order: faker.random.number(),
             altText: faker.random.word()
         }],
-        picture: {
-            url: faker.image.imageUrl(),
-            altText: faker.random.word()
-        },
         page: faker.random.word(),
         created: faker.date.past()
     }
@@ -112,21 +112,22 @@ describe('Cocokini API Interaction', function () {
 
     describe('POST Endpoint', function () {
 
-        it('Should PUT an Endpoint', (done) => {
+        it('Should POST an Endpoint', (done) => {
             let product = {
 
                 style: "HOUSE",
                 name: "BikiniZone",
+                sizes: ["large"],
                 fabrics: "Kitty Kat",
+                picture: {
+                    url: "https://c1.staticflickr.com/1/824/40127048850_995fefa127_b.jpg",
+                    altText: "YO"
+                },
                 pictures: [{
                     url: "https://c1.staticflickr.com/1/824/40127048850_995fefa127_b.jpg",
                     order: 1,
                     altText: "Hawaii"
                 }],
-                picture: {
-                    url: "https://c1.staticflickr.com/1/824/40127048850_995fefa127_b.jpg",
-                    altText: "YO"
-                },
                 page: "2nd Page",
                 created: "01/05/1995"
             }
@@ -136,8 +137,7 @@ describe('Cocokini API Interaction', function () {
                 .send(product)
                 .end((err, res) => {
                     res.should.have.status(201);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('content');
+                    res.body.should.have.property('sizes');
                     done()
                 });
         });
@@ -152,17 +152,18 @@ describe('Cocokini API Interaction', function () {
 
                     style: "SPHOUSE",
                     name: "BikiniZSSone",
-                    fabrics: "Kittysss Kat",
-                    pictures: [{
-                        url: "https://c1.staticflickr.com/1/824/40127048850_995fefa127_b.jpg",
-                        order: 1,
-                        altText: "Hawaii12"
-                    }],
+                    sizes: ["large"],
+                    fabrics: "KittycKat",
                     picture: {
                         url: "https://c1.staticflickr.com/1/824/40127048850_995fefa127_b.jpg",
                         altText: "YO"
                     },
-                    page: "2nd Page2344",
+                    pictures: [{
+                        url: "https://c1.staticflickr.com/1/824/40127048850_995fefa127_b.jpg",
+                        order: 1,
+                        altText: "Hawaii"
+                    }],
+                    page: "2nd Page",
                     created: "01/05/1995"
                 })
 
