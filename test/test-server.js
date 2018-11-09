@@ -10,30 +10,26 @@ var expect = chai.expect;
 chai.should();
 
 const {
-    frontPageSlider,
-    localFavoritesImg,
-    upcomingEvents,
-    productsOverview,
-    productPage
-} = require('./modules/content/content.models');
-
-const {
-    admin
-} = require('./modules/admin/admin.models');
-
-const {
-    Users
-} = require('./modules/users/users.models');
-
-const {
-    app,
-    runServer,
-    closeServer
-} = require('../server');
-
-const {
-    TEST_DATABASE_URL,
+    DATABASE_URL,
     PORT
 } = require('./config');
+
+const {
+    Products
+} = require('./modules/products/products.models');
+
+const {
+    Events
+} = require('./modules/events/events.models');
+
+const {
+    User
+} = require('./modules/users/users.models');
+
+module.exports = {
+    runServer,
+    app,
+    closeServer
+};
 
 chai.use(chaiHttp);
