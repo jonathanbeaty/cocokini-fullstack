@@ -87,9 +87,9 @@ describe('Cocokini API Interaction', function () {
         return closeServer();
     });
 
-    describe('GET Endpoint', function () {
+    describe('GET Endpoints', function () {
 
-        it('Should GET all Endpoints', function () {
+        it('Should GET all Endpoints for Products', function () {
 
             Products.estimatedDocumentCount().then(count => {
                 console.log(count)
@@ -101,8 +101,45 @@ describe('Cocokini API Interaction', function () {
                 .then(function (_res) {
                     res = _res;
                     expect(res).to.have.status(200);
-                    expect(res.body).to.have.lengthOf(10);
                     return Products.count();
+                })
+                .then(function (count) {
+                    expect(res.body).to.have.lengthOf(count);
+                })
+        });
+
+        it('Should GET all Endpoints for Users', function () {
+
+            User.estimatedDocumentCount().then(count => {
+                console.log(count)
+            });
+
+            let res;
+            return chai.request(app)
+                .get('/users')
+                .then(function (_res) {
+                    res = _res;
+                    expect(res).to.have.status(200);
+                    return User.count();
+                })
+                .then(function (count) {
+                    expect(res.body).to.have.lengthOf(count);
+                })
+        });
+
+        it('Should GET all Endpoints for Events', function () {
+
+            Events.estimatedDocumentCount().then(count => {
+                console.log(count)
+            });
+
+            let res;
+            return chai.request(app)
+                .get('/events')
+                .then(function (_res) {
+                    res = _res;
+                    expect(res).to.have.status(200);
+                    return Events.count();
                 })
                 .then(function (count) {
                     expect(res.body).to.have.lengthOf(count);
@@ -112,7 +149,7 @@ describe('Cocokini API Interaction', function () {
 
     describe('POST Endpoint', function () {
 
-        it('Should POST an Endpoint', (done) => {
+        it('Should POST an Endpoint for Products', (done) => {
             let product = {
 
                 style: "HOUSE",
@@ -141,11 +178,62 @@ describe('Cocokini API Interaction', function () {
                     done()
                 });
         });
+
+        it('Should POST an Endpoint for Users', (done) => {
+            let user = {
+
+                email: "laureneware@gmail.com",
+                password: "cocototeikini",
+                profile: {
+                    firstName: "Lauren",
+                    lastName: "Ware",
+                    location: {
+                        address: "211 West Utica St.",
+                        city: "Waikiki",
+                        state: "Oregon",
+                        zipCode: "65478",
+                        country: "United States"
+                    }
+                },
+                topSize: "Xtra Large",
+                bottomSize: "Large"
+            }
+
+            chai.request(app)
+                .post('/users')
+                .send(user)
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    done()
+                });
+        });
+
+        it('Should POST an Endpoint for Events', (done) => {
+            let event = {
+
+                event: "Island Farmers Market - On the Island",
+                location: "Padre Island",
+                date: "March 23, 2019",
+                picture: {
+                    url: "https://c1.staticflickr.com/1/961/26918910337_9c2fa22c2e_b.jpg",
+                    altText: "Octoberfest"
+                }
+            }
+
+            chai.request(app)
+                .post('/events')
+                .send(event)
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    res.body.should.have.property('location');
+                    done()
+                });
+        });
     });
 
     describe('PUT Endpoint', function () {
 
-        it('Should PUT down', (done) => {
+        it('Should PUT down Products', (done) => {
             chai.request(app)
                 .put('/products')
                 .send({
@@ -174,11 +262,63 @@ describe('Cocokini API Interaction', function () {
                     done()
                 });
         });
+
+        it('Should PUT down Users', (done) => {
+            chai.request(app)
+                .put('/users')
+                .send({
+
+                    email: "laureneware@gmail.com",
+                    password: "cocototeikini",
+                    profile: {
+                        firstName: "Lauren",
+                        lastName: "Ware",
+                        location: {
+                            address: "211 West Utica St.",
+                            city: "Waikiki",
+                            state: "Oregon",
+                            zipCode: "65478",
+                            country: "United States"
+                        }
+                    },
+                    topSize: "Xtra Large",
+                    bottomSize: "Large"
+                })
+
+                .end(function (err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(404);
+
+                    done()
+                });
+        });
+
+        it('Should PUT down Events', (done) => {
+            chai.request(app)
+                .put('/events')
+                .send({
+
+                    event: "Island Farmers Market - On the Island",
+                    location: "Padre Island",
+                    date: "March 23, 2019",
+                    picture: {
+                        url: "https://c1.staticflickr.com/1/961/26918910337_9c2fa22c2e_b.jpg",
+                        altText: "Octoberfest"
+                    }
+                })
+
+                .end(function (err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(404);
+
+                    done()
+                });
+        });
     });
 
     describe('DELETE endpoint', function () {
 
-        it('Delete a Product by id', function () {
+        it('Delete a Product by ID', function () {
 
             let product1;
 
@@ -196,5 +336,47 @@ describe('Cocokini API Interaction', function () {
                     expect(_product).to.be.null;
                 });
         });
+
+        // it('Delete an Event by ID', function () {
+
+        //     let event1;
+
+        //     return Events
+        //         .findOne()
+        //         .then(function (_event) {
+        //             event1 = _event;
+        //             return chai.request(app).delete(`/events/${event1.id}`);
+        //         })
+        //         .then(function (res) {
+        //             expect(res).to.have.status(204);
+        //             return Events.findById(event1.id);
+        //         })
+        //         .then(function (_event) {
+        //             expect(_event).to.be.null;
+        //         });
+        // });
     });
+
+
+    // describe('Should Delete Users Endpoint', function () {
+
+    //     it('Delete a User by ID', function () {
+
+    //         let user2;
+
+    //         return User
+    //             .findOne()
+    //             .then(function (_use) {
+    //                 user2 = _use;
+    //                 return chai.request(app).delete(`/users/${user2.id}`);
+    //             })
+    //             .then(function (res) {
+    //                 expect(res).to.have.status(204);
+    //                 return User.findById(user2.id);
+    //             })
+    //             .then(function (_use) {
+    //                 expect(_use).to.be.null;
+    //             });
+    //     });
+    // });
 });
