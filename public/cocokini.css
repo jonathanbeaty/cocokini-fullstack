@@ -1459,6 +1459,12 @@ Hide the images by default */ .mySlides {
   margin: auto;
 }
 
+.signup-page {
+  width: 360px;
+  padding: 2% 0 0;
+  margin: auto;
+}
+
 .form {
   position: relative;
   z-index: 1;

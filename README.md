@@ -1,6 +1,6 @@
 # Cocokini eCommerce Site
 
-![alt-text](https://c1.staticflickr.com/5/4839/30850860227_6861444594_b.jpg);
+![alt-text](https://c1.staticflickr.com/5/4839/30850860227_6861444594_b.jpg)
 
 
 # Why Cocokini?
@@ -10,11 +10,11 @@ I grew up in Corpus Christi, TX. and the beach was a huge part of my life from b
 
 <h1> COMING SOON </H1>
 
-
 <b>[Here's a great Promo video for Cocokini](https://youtu.be/D3iFi1Apwck)</b>
 
 # Live Demo
-[Click here]()
+
+<h1> COMING SOON </H1>
 
 # What Technologies were used to build this App? 
 • [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML)</br>
