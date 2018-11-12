@@ -2,11 +2,19 @@
 
 const express = require('express');
 const morgan = require('morgan');
+const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
 var Auth0Strategy = require('passport-auth0');
+var session = require('express-session');
+var passport = require('passport');
+var Auth0Strategy = require('passport-auth0');
+var userInViews = require('./lib/middleware/userInViews');
+var authRouter = require('./routes/auth');
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
 mongoose.Promise = global.Promise;
 
 const {
@@ -29,7 +37,13 @@ const {
 const jsonParser = bodyParser.json();
 const app = express();
 
-app.use(express.static('public'));
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    entended: false
+}))
 
 app.use(morgan('common'));
 app.use(express.json());
@@ -329,6 +343,52 @@ app.use('*', function (req, res) {
     });
 });
 
+var sess = {
+    secret: 'jb12345',
+    cookie: {},
+    resave: true,
+    saveUninitialized: true
+};
+
+if (app.get('env') === 'production') {
+    sess.cookie.secure = true; // serve secure cookies, requires https
+}
+
+app.use(session(sess));
+
+// Configure Passport to use Auth0
+var strategy = new Auth0Strategy({
+        domain: 'jonathanbeaty.auth0.com',
+        clientID: 'anMXBLVXBarceUZG1nCciSrM02xMK7RF',
+        clientSecret: 'NrCo3DwOmD9sftBzd4f8Ep8vXSHb_9Uwvo2wv8dWMRTPULgZIxu-On-kUf0ISIU2',
+        callbackURL: 'http://localhost:8080/callback'
+    },
+    function (accessToken, refreshToken, extraParams, profile, done) {
+        // accessToken is the token to call Auth0 API (not needed in the most cases)
+        // extraParams.id_token has the JSON Web Token
+        // profile has all the information from the user
+        return done(null, profile);
+    }
+);
+
+passport.use(strategy);
+
+passport.serializeUser(function (user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function (user, done) {
+    done(null, user);
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(userInViews());
+app.use('/', authRouter);
+app.use('/', indexRouter);
+app.use('/', usersRouter);
+
 let server;
 
 function runServer(databaseUrl, port = PORT) {
@@ -350,6 +410,7 @@ function runServer(databaseUrl, port = PORT) {
         });
     });
 }
+
 
 function closeServer() {
     return mongoose.disconnect().then(() => {
