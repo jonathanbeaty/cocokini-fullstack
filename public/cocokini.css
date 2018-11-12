@@ -237,6 +237,10 @@ if it's not present, don't show loader */
   margin-top: 25px;
 }
 
+#my-account {
+  margin-top: 25px;
+}
+
 a {
   text-decoration: none;
   color: black;

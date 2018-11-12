@@ -1,7 +1,5 @@
 $.getJSON('http://localhost:8080/products', function (data) {
 
-    console.log(data);
-
     $("#apiContainer").append(`<img id="onepic" src="${data[0].picture.url}" style="width:100%;">`);
 
 });
@@ -35,7 +33,7 @@ function handleCreateAccount() {
             contentType: 'application/json',
             data: JSON.stringify(userData),
             success: function () {
-                alert("Successful, you are now a member");
+                alert("Very nice!")
             }
         });
     });

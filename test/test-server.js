@@ -337,46 +337,49 @@ describe('Cocokini API Interaction', function () {
                 });
         });
 
-        // it('Delete an Event by ID', function () {
+        it('Delete an Event by ID', function () {
 
-        //     let event1;
+            let event1;
 
-        //     return Events
-        //         .findOne()
-        //         .then(function (_event) {
-        //             event1 = _event;
-        //             return chai.request(app).delete(`/events/${event1.id}`);
-        //         })
-        //         .then(function (res) {
-        //             expect(res).to.have.status(204);
-        //             return Events.findById(event1.id);
-        //         })
-        //         .then(function (_event) {
-        //             expect(_event).to.be.null;
-        //         });
-        // });
+            return Events
+                .findOne()
+                .then(function (_event) {
+                    event1 = _event;
+                    console.log(arguments);
+                    console.log(event1);
+                    return chai.request(app).delete(`/events/${event1.id}`);
+                })
+                .then(function (res) {
+                    expect(res).to.have.status(204);
+                    return Events.findById(event1.id);
+                })
+                .then(function (_event) {
+                    expect(_event).to.be.null;
+                });
+        });
+
+        it('Delete a User by ID', function () {
+
+            let user2;
+
+            return User
+                .findOne()
+                .then(function (_user) {
+                    user2 = _user;
+                    console.log(arguments);
+                    console.log(user2);
+                    return chai.request(app).delete(`/users/${user2.id}`);
+                })
+                .then(function (res) {
+                    expect(res).to.have.status(204);
+                    return User.findById(user2.id);
+                })
+                .then(function (_user) {
+                    expect(_user).to.be.null;
+                });
+        });
+
+
     });
 
-
-    // describe('Should Delete Users Endpoint', function () {
-
-    //     it('Delete a User by ID', function () {
-
-    //         let user2;
-
-    //         return User
-    //             .findOne()
-    //             .then(function (_use) {
-    //                 user2 = _use;
-    //                 return chai.request(app).delete(`/users/${user2.id}`);
-    //             })
-    //             .then(function (res) {
-    //                 expect(res).to.have.status(204);
-    //                 return User.findById(user2.id);
-    //             })
-    //             .then(function (_use) {
-    //                 expect(_use).to.be.null;
-    //             });
-    //     });
-    // });
 });

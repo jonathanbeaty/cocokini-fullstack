@@ -4,6 +4,9 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+var passport = require('passport');
+var session = require('express-session');
+var Auth0Strategy = require('passport-auth0');
 mongoose.Promise = global.Promise;
 
 const {
