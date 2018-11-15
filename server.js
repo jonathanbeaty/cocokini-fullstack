@@ -11,12 +11,13 @@ var session = require('express-session');
 var dotenv = require('dotenv');
 var Auth0Strategy = require('passport-auth0');
 var session = require('express-session');
-var passport = require('passport');
+var passport = require('passport')
 var userInViews = require('./lib/middleware/userInViews');
 var authRouter = require('./routes/auth');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var cookieParser = require('cookie-parser');
+var ls = require('local-storage');
 
 mongoose.Promise = global.Promise;
 
@@ -47,9 +48,9 @@ var strategy = new Auth0Strategy({
         callbackURL: process.env.AUTH0_CALLBACK_URL || 'http://localhost:8080/callback'
     },
     function (accessToken, refreshToken, extraParams, profile, done) {
-        // accessToken is the token to call Auth0 API (not needed in the most cases)
-        // extraParams.id_token has the JSON Web Token
-        // profile has all the information from the user
+
+
+
         return done(null, profile);
     }
 );
@@ -66,6 +67,9 @@ passport.deserializeUser(function (user, done) {
 
 const jsonParser = bodyParser.json();
 const app = express();
+
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
