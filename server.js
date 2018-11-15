@@ -17,6 +17,7 @@ var authRouter = require('./routes/auth');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var cookieParser = require('cookie-parser');
+
 mongoose.Promise = global.Promise;
 
 dotenv.load();
@@ -74,6 +75,88 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(flash());
+
+var sess = {
+    secret: 'jb12345',
+    cookie: {},
+    resave: true,
+    saveUninitialized: true
+};
+
+if (app.get('env') === 'production') {
+    sess.cookie.secure = true; // serve secure cookies, requires https
+}
+
+app.use(session(sess));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(flash());
+
+app.use(function (req, res, next) {
+    if (req && req.query && req.query.error) {
+        req.flash('error', req.query.error);
+    }
+    if (req && req.query && req.query.error_description) {
+        req.flash('error_description', req.query.error_description);
+    }
+    next();
+});
+
+app.use(userInViews());
+app.use('/', authRouter);
+app.use('/', indexRouter);
+app.use('/', usersRouter);
+
+// app.get('/callback',
+//     passport.authenticate('auth0', {
+//         failureRedirect: '/login'
+//     }),
+//     function (req, res) {
+//         if (!req.user) {
+//             throw new Error('user null');
+//         }
+//         res.redirect("/");
+//     }
+// );
+
+// app.get('/login',
+//     passport.authenticate('auth0', {}),
+//     function (req, res) {
+//         res.redirect("/");
+//     });
+
+app.use(function (req, res, next) {
+    const err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+// Error handlers
+
+// Development error handler
+// Will print stacktrace
+if (app.get('env') === 'development') {
+    app.use(function (err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
+    });
+}
+
+// Production error handler
+// No stacktraces leaked to user
+app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
+});
 
 app.get('/users', (req, res) => {
     User
@@ -369,88 +452,6 @@ app.use('*', function (req, res) {
         message: 'Nothing here broski, move along'
     });
 });
-
-var sess = {
-    secret: 'jb12345',
-    cookie: {},
-    resave: true,
-    saveUninitialized: true
-};
-
-if (app.get('env') === 'production') {
-    sess.cookie.secure = true; // serve secure cookies, requires https
-}
-
-app.use(session(sess));
-
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(flash());
-
-app.use(function (req, res, next) {
-    if (req && req.query && req.query.error) {
-        req.flash('error', req.query.error);
-    }
-    if (req && req.query && req.query.error_description) {
-        req.flash('error_description', req.query.error_description);
-    }
-    next();
-});
-
-app.use(userInViews());
-app.use('/', authRouter);
-app.use('/', indexRouter);
-app.use('/', usersRouter);
-
-app.use(function (req, res, next) {
-    const err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
-// Error handlers
-
-// Development error handler
-// Will print stacktrace
-if (app.get('env') === 'development') {
-    app.use(function (err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
-    });
-}
-
-// Production error handler
-// No stacktraces leaked to user
-app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
-});
-
-app.get('/callback',
-    passport.authenticate('auth0', {
-        failureRedirect: '/login'
-    }),
-    function (req, res) {
-        if (!req.user) {
-            throw new Error('user null');
-        }
-        res.redirect("/");
-    }
-);
-
-app.get('/login',
-    passport.authenticate('auth0', {}),
-    function (req, res) {
-        res.redirect("/");
-    });
 
 let server;
 

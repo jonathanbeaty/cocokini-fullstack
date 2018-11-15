@@ -3,9 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.redirect('../public/index.html', {
-        title: 'Auth0 Webapp sample Nodejs'
-    });
+  res.render('index', { title: 'Auth0 Webapp sample Nodejs' });
 });
 
 module.exports = router;
