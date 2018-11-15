@@ -67,7 +67,7 @@ passport.deserializeUser(function (user, done) {
 const jsonParser = bodyParser.json();
 const app = express();
 
-app.use(express.static('public'))
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(morgan('common'));
 app.use(express.json());
@@ -91,7 +91,6 @@ app.use(session(sess));
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(flash());
 
@@ -109,54 +108,6 @@ app.use(userInViews());
 app.use('/', authRouter);
 app.use('/', indexRouter);
 app.use('/', usersRouter);
-
-// app.get('/callback',
-//     passport.authenticate('auth0', {
-//         failureRedirect: '/login'
-//     }),
-//     function (req, res) {
-//         if (!req.user) {
-//             throw new Error('user null');
-//         }
-//         res.redirect("/");
-//     }
-// );
-
-// app.get('/login',
-//     passport.authenticate('auth0', {}),
-//     function (req, res) {
-//         res.redirect("/");
-//     });
-
-app.use(function (req, res, next) {
-    const err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
-// Error handlers
-
-// Development error handler
-// Will print stacktrace
-if (app.get('env') === 'development') {
-    app.use(function (err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
-    });
-}
-
-// Production error handler
-// No stacktraces leaked to user
-app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
-});
 
 app.get('/users', (req, res) => {
     User
