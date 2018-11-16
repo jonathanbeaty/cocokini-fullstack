@@ -43,6 +43,22 @@ function seedProductsData() {
     return Products.insertMany(productsData);
 }
 
+function seedEventsData() {
+    let eventsData = [];
+    for (let i = 0; i < 10; i++) {
+        eventsData.push(createEventsData());
+    }
+    return Events.insertMany(eventsData);
+}
+
+function seedUserData() {
+    let userData = [];
+    for (let i = 0; i < 10; i++) {
+        userData.push(createUserData());
+    }
+    return Users.insertMany(userData);
+}
+
 function createProductsData() {
     return {
 
@@ -61,6 +77,40 @@ function createProductsData() {
         }],
         page: faker.random.word(),
         created: faker.date.past()
+    }
+};
+
+function createEventsData() {
+    return {
+
+        events: faker.random.word(),
+        location: faker.address.city(),
+        date: faker.date.past(),
+        picture: {
+            url: "https://c1.staticflickr.com/1/824/40127048850_995fefa127_b.jpg",
+            altText: faker.random.word()
+        }
+    }
+};
+
+function createUserData() {
+    return {
+
+        email: faker.random.word(),
+        password: faker.random.word(),
+        profile: {
+            firstName: faker.random.word(),
+            lastName: faker.random.word(),
+            location: {
+                address: faker.address.streetAddress(),
+                city: faker.address.city(),
+                state: faker.address.state(),
+                zipCode: faker.finance.number(),
+                country: faker.address.country()
+            },
+            topSize: faker.random.word(),
+            bottomSize: faker.random.word()
+        }
     }
 };
 

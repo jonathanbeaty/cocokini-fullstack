@@ -325,16 +325,13 @@ app.put('/events/:id', jsonParser, (req, res) => {
         .findByIdAndUpdate(req.params.id, {
                 $set: toUpdate
             },
-            User.findOne({
+            Events.findOne({
                 _id: req.params.id
-            }).then(function (User) {
-                res.send(User)
+            }).then(function (Events) {
+                res.send(Events)
             })
         )
         .then(updatedEvent => res.status(204).end())
-        .catch(err => res.status(500).json({
-            message: 'Internal server error'
-        }));
 });
 
 app.put('/products/:id', jsonParser, (req, res) => {
@@ -361,17 +358,13 @@ app.put('/products/:id', jsonParser, (req, res) => {
 
     Products
         .findByIdAndUpdate(req.params.id, {
-                $set: toUpdate
-            },
-            User.findOne({
-                _id: req.params.id
-            }).then(function (User) {
-                res.send(User)
-            })
-        )
-        .then(updatedProduct => res.status(204).end())
+            $set: toUpdated
+        }, {
+            new: true
+        })
+        .then(updatedPost => res.status(204).end())
         .catch(err => res.status(500).json({
-            message: 'Internal server error'
+            message: 'Something went wrong'
         }));
 });
 
