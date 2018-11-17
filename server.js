@@ -6,22 +6,30 @@ const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 var passport = require('passport');
-var flash = require('connect-flash');
-var session = require('express-session');
-var dotenv = require('dotenv');
-var Auth0Strategy = require('passport-auth0');
-var session = require('express-session');
-var passport = require('passport')
-var userInViews = require('./lib/middleware/userInViews');
-var authRouter = require('./routes/auth');
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+// var flash = require('connect-flash');
+// var dotenv = require('dotenv');
+// var Auth0Strategy = require('passport-auth0');
+// var session = require('express-session');
+var passport = require('passport');
+// var userInViews = require('./lib/middleware/userInViews');
+// var authRouter = require('./routes/auth');
+// var indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
 var cookieParser = require('cookie-parser');
-var ls = require('local-storage');
+
+const {
+    router: usersRouter
+} = require('./users');
+
+const {
+    router: authRouter,
+    localStrategy,
+    jwtStrategy
+} = require('./auth');
 
 mongoose.Promise = global.Promise;
 
-dotenv.load();
+// dotenv.load();
 
 const {
     DATABASE_URL,
@@ -36,26 +44,21 @@ const {
     Events
 } = require('./modules/events/events.models');
 
-const {
-    User
-} = require('./modules/users/users.models');
-
 // Configure Passport to use Auth0
-var strategy = new Auth0Strategy({
-        domain: process.env.AUTH0_DOMAIN,
-        clientID: process.env.AUTH0_CLIENT_ID,
-        clientSecret: process.env.AUTH0_CLIENT_SECRET,
-        callbackURL: process.env.AUTH0_CALLBACK_URL || 'http://localhost:8080/callback'
-    },
-    function (accessToken, refreshToken, extraParams, profile, done) {
+// var strategy = new Auth0Strategy({
+//         domain: process.env.AUTH0_DOMAIN,
+//         clientID: process.env.AUTH0_CLIENT_ID,
+//         clientSecret: process.env.AUTH0_CLIENT_SECRET,
+//         callbackURL: process.env.AUTH0_CALLBACK_URL || 'http://localhost:8080/callback'
+//     },
+//     function (accessToken, refreshToken, extraParams, profile, done) {
+//         return done(null, profile);
+//     }
+// );
+// passport.use(strategy);
 
-
-
-        return done(null, profile);
-    }
-);
-
-passport.use(strategy);
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -68,64 +71,93 @@ passport.deserializeUser(function (user, done) {
 const jsonParser = bodyParser.json();
 const app = express();
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-
-app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(morgan('common'));
-app.use(express.json());
 
-app.use(cookieParser());
-
-app.use(flash());
-
-var sess = {
-    secret: 'jb12345',
-    cookie: {},
-    resave: true,
-    saveUninitialized: true
-};
-
-if (app.get('env') === 'production') {
-    sess.cookie.secure = true; // serve secure cookies, requires https
-}
-
-app.use(session(sess));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use(flash());
-
+// CORS
 app.use(function (req, res, next) {
-    if (req && req.query && req.query.error) {
-        req.flash('error', req.query.error);
-    }
-    if (req && req.query && req.query.error_description) {
-        req.flash('error_description', req.query.error_description);
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+    if (req.method === 'OPTIONS') {
+        return res.send(204);
     }
     next();
 });
 
-app.use(userInViews());
-app.use('/', authRouter);
-app.use('/', indexRouter);
-app.use('/', usersRouter);
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
-app.get('/users', (req, res) => {
-    User
-        .find()
-        .then(Users => {
-            res.json(Users.map(user => user.serialize()));
-        })
-        .catch(err => {
-            console.error(err);
-            res.status(500).json({
-                error: 'something went horribly awry'
-            });
-        });
+app.use('/users', usersRouter);
+app.use('/auth', authRouter);
+
+const jwtAuth = passport.authenticate('jwt', {
+    session: false
 });
+
+// A protected endpoint which needs a valid JWT to access it
+app.get('/protected', jwtAuth, (req, res) => {
+    return res.json({
+        data: 'rosebud'
+    });
+});
+
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'pug');
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(express.json());
+
+app.use(cookieParser());
+
+// app.use(flash());
+
+// var sess = {
+//     secret: 'jb12345',
+//     cookie: {},
+//     resave: true,
+//     saveUninitialized: true
+// };
+
+// if (app.get('env') === 'production') {
+//     sess.cookie.secure = true; // serve secure cookies, requires https
+// }
+
+// app.use(session(sess));
+
+// app.use(passport.initialize());
+// app.use(passport.session());
+
+// app.use(flash());
+
+// app.use(function (req, res, next) {
+//     if (req && req.query && req.query.error) {
+//         req.flash('error', req.query.error);
+//     }
+//     if (req && req.query && req.query.error_description) {
+//         req.flash('error_description', req.query.error_description);
+//     }
+//     next();
+// });
+
+// app.use(userInViews());
+// app.use('/', authRouter);
+// app.use('/', indexRouter);
+// app.use('/', usersRouter);
+
+// app.get('/users', (req, res) => {
+//     User
+//         .find()
+//         .then(Users => {
+//             res.json(Users.map(user => user.serialize()));
+//         })
+//         .catch(err => {
+//             console.error(err);
+//             res.status(500).json({
+//                 error: 'something went horribly awry'
+//             });
+//         });
+// });
 
 app.get('/events', (req, res) => {
     Events
@@ -155,43 +187,43 @@ app.get('/products', (req, res) => {
         });
 });
 
-app.post('/users', (req, res) => {
-    const requiredFields = ['email', 'password'];
-    for (let i = 0; i < requiredFields.length; i++) {
-        const field = requiredFields[i];
-        if (!(field in req.body)) {
-            const message = `Missing \`${field}\` in request body`;
-            console.error(message);
-            return res.status(400).send(message);
-        }
-    }
+// app.post('/users', (req, res) => {
+//     const requiredFields = ['email', 'password'];
+//     for (let i = 0; i < requiredFields.length; i++) {
+//         const field = requiredFields[i];
+//         if (!(field in req.body)) {
+//             const message = `Missing \`${field}\` in request body`;
+//             console.error(message);
+//             return res.status(400).send(message);
+//         }
+//     }
 
-    User
-        .create({
-            email: req.body.email,
-            password: req.body.password,
-            profile: {
-                firstName: req.body.profile.firstName,
-                lastName: req.body.profile.lastName,
-                location: {
-                    address: req.body.profile.location.address,
-                    city: req.body.profile.location.city,
-                    state: req.body.profile.location.state,
-                    zipCode: req.body.profile.location.zipCode,
-                    country: req.body.profile.location.country
-                }
-            },
-            topSize: req.body.topSize,
-            bottomSize: req.body.bottomSize
-        })
-        .then(user => res.status(201).json(user.serialize()))
-        .catch(err => {
-            console.error(err);
-            res.status(500).json({
-                error: 'Something went bad.......very bad'
-            });
-        });
-});
+//     User
+//         .create({
+//             email: req.body.email,
+//             password: req.body.password,
+//             profile: {
+//                 firstName: req.body.profile.firstName,
+//                 lastName: req.body.profile.lastName,
+//                 location: {
+//                     address: req.body.profile.location.address,
+//                     city: req.body.profile.location.city,
+//                     state: req.body.profile.location.state,
+//                     zipCode: req.body.profile.location.zipCode,
+//                     country: req.body.profile.location.country
+//                 }
+//             },
+//             topSize: req.body.topSize,
+//             bottomSize: req.body.bottomSize
+//         })
+//         .then(user => res.status(201).json(user.serialize()))
+//         .catch(err => {
+//             console.error(err);
+//             res.status(500).json({
+//                 error: 'Something went bad.......very bad'
+//             });
+//         });
+// });
 
 app.post('/events', (req, res) => {
     const requiredFields = ['event', 'location', 'date'];
@@ -261,43 +293,43 @@ app.post('/products', (req, res) => {
         });
 });
 
-app.put('/users/:id', jsonParser, (req, res) => {
-    if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
-        const message = (
-            `Request path id (${req.params.id}) and request body id ` +
-            `(${req.body.id}) must match`);
-        console.error(message);
-        return res.status(400).json({
-            message: message
-        });
-    }
+// app.put('/users/:id', jsonParser, (req, res) => {
+//     if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+//         const message = (
+//             `Request path id (${req.params.id}) and request body id ` +
+//             `(${req.body.id}) must match`);
+//         console.error(message);
+//         return res.status(400).json({
+//             message: message
+//         });
+//     }
 
-    const toUpdate = {};
-    const updateableFields = ['email', 'profile', 'password', 'firstName', 'lastName', 'address', 'city', 'state', 'zipCode', 'country', 'topSize', 'bottomSize'];
+//     const toUpdate = {};
+//     const updateableFields = ['email', 'profile', 'password', 'firstName', 'lastName', 'address', 'city', 'state', 'zipCode', 'country', 'topSize', 'bottomSize'];
 
-    updateableFields.forEach(field => {
-        if (field in req.body) {
-            toUpdate[field] = req.body[field];
-        }
-    });
+//     updateableFields.forEach(field => {
+//         if (field in req.body) {
+//             toUpdate[field] = req.body[field];
+//         }
+//     });
 
-    console.log(toUpdate);
+//     console.log(toUpdate);
 
-    User
-        .findByIdAndUpdate(req.params.id, {
-                $set: toUpdate
-            },
-            User.findOne({
-                _id: req.params.id
-            }).then(function (User) {
-                res.send(User)
-            })
-        )
-        .then(updatedUser => res.status(204).end())
-        .catch(err => res.status(500).json({
-            message: 'Internal server error'
-        }));
-});
+//     User
+//         .findByIdAndUpdate(req.params.id, {
+//                 $set: toUpdate
+//             },
+//             User.findOne({
+//                 _id: req.params.id
+//             }).then(function (User) {
+//                 res.send(User)
+//             })
+//         )
+//         .then(updatedUser => res.status(204).end())
+//         .catch(err => res.status(500).json({
+//             message: 'Internal server error'
+//         }));
+// });
 
 app.put('/events/:id', jsonParser, (req, res) => {
     if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
@@ -368,14 +400,14 @@ app.put('/products/:id', jsonParser, (req, res) => {
         }));
 });
 
-app.delete('/users/:id', (req, res) => {
-    User
-        .findByIdAndDelete(req.params.id)
-        .then(user => res.status(204).end())
-        .catch(err => res.status(500).json({
-            message: 'Internal server error'
-        }));
-});
+// app.delete('/users/:id', (req, res) => {
+//     User
+//         .findByIdAndDelete(req.params.id)
+//         .then(user => res.status(204).end())
+//         .catch(err => res.status(500).json({
+//             message: 'Internal server error'
+//         }));
+// });
 
 app.delete('/events/:id', (req, res) => {
     Events
